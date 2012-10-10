@@ -7,6 +7,8 @@ Little git extras.
 Clone / Tarball:
 
 ```bash
+git clone git@github.com:daxko/git-extras.git
+cd git-extras
 $ make install
 ```
 
