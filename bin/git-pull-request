@@ -19,7 +19,7 @@ json() {
   "title": "$1",
   "body": "$2",
   "head": "$3",
-  "base": "master"
+  "base": "beta"
 }  
 EOF
 }
