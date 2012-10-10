@@ -13,7 +13,7 @@ $ make install
 One-liner:
 
 ```bash
-$ curl https://raw.github.com/visionmedia/git-extras/master/bin/git-extras | INSTALL=y sh
+$ curl https://raw.github.com/daxko/git-extras/master/bin/git-extras | INSTALL=y sh
 ```
 
 [MacPorts](http://www.macports.org/)
