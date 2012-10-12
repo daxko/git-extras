@@ -1,0 +1,8 @@
+#!/bin/sh
+
+branch=${1-$(git symbolic-ref HEAD | sed 's/refs\/heads\///')}
+
+git checkout beta
+git pull
+git checkout $branch
+git merge --no-ff beta
