@@ -1,8 +1,13 @@
 #!/bin/sh
 
+src="beta"
 branch=${1-$(git symbolic-ref HEAD | sed 's/refs\/heads\///')}
 
-git checkout beta
-git pull
+echo "# Checking out $src..."
+git checkout $src
+echo "# Updating $src from remote..."
+git pull --rebase
+echo "# Checking out $branch..."
 git checkout $branch
-git merge --no-ff beta
+echo "# Rebasing $src on top of $branch..."
+git rebase $src
