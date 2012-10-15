@@ -4,6 +4,14 @@
 # Echo <msg> and exit
 #
 
+base_branch=$1
+
+#use beta for default git branch unless arg is specified in command-line
+if [ -z "$1" ] 
+	then
+		base_branch="beta"
+fi
+
 abort() {
   echo $@
   exit 1
@@ -19,7 +27,7 @@ json() {
   "title": "$1",
   "body": "$2",
   "head": "$3",
-  "base": "beta"
+  "base": "$base_branch"
 }  
 EOF
 }
@@ -53,5 +61,6 @@ echo
 # create pull request
 
 body=$(json "$title" "$body" $branch)
+
 curl -u "$user" "https://api.github.com/repos/$project/pulls" -d "$body"
 

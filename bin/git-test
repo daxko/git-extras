@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+base_arg=$1
+
+if [ -z "$1" ] 
+	then
+		base_arg="beta"
+fi
+
+json() {
+  cat <<EOF
+{s
+  "title": "$1",
+  "body": "$2",
+  "head": "$3",
+  "base": "$base_arg"
+}  
+EOF
+}
+
+echo "the base is..."
+echo $base_arg
+
+
+j=$(json "blah" "blah2" "blah3")
+echo "the json is"
+echo $j
+
+
+
+
+
