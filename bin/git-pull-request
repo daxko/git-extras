@@ -4,12 +4,12 @@
 # Echo <msg> and exit
 #
 
-base_branch=$1
+base=$1
 
 #use beta for default git branch unless arg is specified in command-line
 if [ -z "$1" ] 
 	then
-		base_branch="beta"
+		base="beta"
 fi
 
 abort() {
@@ -27,7 +27,7 @@ json() {
   "title": "$1",
   "body": "$2",
   "head": "$3",
-  "base": "$base_branch"
+  "base": "$4"
 }  
 EOF
 }
@@ -39,7 +39,7 @@ test -z "$user" && abort "git config user.email required"
 
 # branch
 
-branch=${1-$(git symbolic-ref HEAD | sed 's/refs\/heads\///')}
+branch=$(git symbolic-ref HEAD | sed 's/refs\/heads\///')
 
 # make sure it's pushed
 
@@ -60,7 +60,7 @@ echo
 
 # create pull request
 
-body=$(json "$title" "$body" $branch)
+body=$(json "$title" "$body" $branch $base)
 
 curl -u "$user" "https://api.github.com/repos/$project/pulls" -d "$body"
 
