@@ -3,11 +3,7 @@
 src="beta"
 branch=${1-$(git symbolic-ref HEAD | sed 's/refs\/heads\///')}
 
-echo "# Checking out $src..."
-git checkout $src
-echo "# Updating $src from remote..."
-git pull --rebase
-echo "# Checking out $branch..."
-git checkout $branch
-echo "# Rebasing $src on top of $branch..."
-git rebase $src
+echo "# Getting changes from origin..."
+git fetch origin
+echo "# Rebasing origin/$src on top of $branch..."
+git rebase origin/$src
