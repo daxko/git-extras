@@ -64,3 +64,4 @@ body=$(json "$title" "$body" $branch $base)
 
 curl -u "$user" "https://api.github.com/repos/$project/pulls" -d "$body"
 
+#daxko-ready-for-review $base

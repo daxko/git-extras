@@ -1,7 +1,5 @@
 #!/bin/sh
-
-src="beta"
-branch=${1-$(git symbolic-ref HEAD | sed 's/refs\/heads\///')}
+src=${1-"beta"}
 
 echo "# Getting changes from origin..."
 git fetch origin

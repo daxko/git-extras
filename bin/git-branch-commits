@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git --no-pager log remotes/origin/$1.. --pretty=oneline --graph

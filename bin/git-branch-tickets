@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git branch-commits $1 | grep  'CCO-[0-9]*\|OPS-[0-9]*'
