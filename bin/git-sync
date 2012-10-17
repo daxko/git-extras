@@ -1,6 +1,8 @@
 #!/bin/sh
 src=${1-"beta"}
 
+branch=$(git symbolic-ref HEAD | sed 's/refs\/heads\///')
+
 echo "# Getting changes from origin..."
 git fetch origin
 echo "# Rebasing origin/$src on top of $branch..."
