@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+#
+# Echo <msg> and exit
+#
+
+base=$1
+
+#use beta for default git branch unless arg is specified in command-line
+if [ -z "$1" ] 
+	then
+		base="beta"
+fi
+
+abort() {
+  echo $@
+  exit 1
+}
+
+#
+# Produce json with <title>, <body>, and <head>
+#
+
+json() {
+  cat <<EOF
+{
+  "title": "$1",
+  "body": "$2",
+  "head": "$3",
+  "base": "$4"
+}  
+EOF
+}
+
+# user
+
+user=$(git config --global user.email)
+test -z "$user" && abort "git config user.email required"
+
+# branch
+
+branch=$(git symbolic-ref HEAD | sed 's/refs\/heads\///')
+messages=$(git log remotes/origin/$base.. --pretty=format:%s)
+
+# make sure it's pushed
+
+git push origin $branch || abort "failed to push $branch"
+
+# lame hack to get project
+
+project=$(git config remote.origin.url | sed 's/^.*://' | sed 's/\.git$//')
+
+# create pull request
+
+body=$(json "$branch" "$messages" $branch $base)
+
+#echo $body
+
+curl -u "$user" "https://api.github.com/repos/$project/pulls" -d "$body"
+
+daxko-ready-for-review $base
