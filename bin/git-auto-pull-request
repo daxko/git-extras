@@ -40,7 +40,7 @@ test -z "$user" && abort "git config user.email required"
 # branch
 
 branch=$(git symbolic-ref HEAD | sed 's/refs\/heads\///')
-messages=$(git log remotes/origin/$base.. --pretty=format:%s)
+messages=$(git log remotes/origin/$base.. --pretty=format:%s | tr '\n' ' ')
 
 # make sure it's pushed
 
