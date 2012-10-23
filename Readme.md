@@ -10,14 +10,8 @@ Clone / Tarball:
 git clone git@github.com:daxko/git-extras.git
 cd git-extras
 $ make install
+$ bundle install
 ```
-
-One-liner:
-
-```bash
-$ curl https://raw.github.com/daxko/git-extras/master/bin/git-extras | INSTALL=y sh
-```
-
 ## Screencasts
 
   Just getting started? Check out these screencasts:
