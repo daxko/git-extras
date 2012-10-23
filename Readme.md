@@ -101,6 +101,14 @@ $ git feature finish dependencies
 
 All of this works with `feature`, `bug`, or `refactor`.
 
+## git-auto-pull-request &lt;target_branch&gt;
+
+Create a pull request for all commits in your current branch to pull into &lt;target_branch&gt; and move over jira tickets to ready for code review.
+
+```bash
+$ git auto-pull-request beta
+```
+
 ## git-contrib &lt;author&gt;
 
 Output `author`'s contributions to a project:
