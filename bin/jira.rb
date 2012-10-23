@@ -1,6 +1,12 @@
 require 'rest_client'
 require 'json'
 
+class Transition
+	def initialize(name)
+		@name = name
+	end
+end
+
 class Jira
 
 	@username = 'devapi'
@@ -9,11 +15,10 @@ class Jira
 
 	@states = 
 	{
-		"in_dev" => 11,
-		"back_to_in_dev" => 441,
-		"story_code_review" => 501,
-		"defect_code_review" => 601,
-		"ready_for_build" => 511
+		"in_dev" => "Begin Development",
+		"back_to_in_dev" => "Back to Development",
+		"code_review" => "Ready for Code Review",
+		"ready_for_build" => "Ready for Build"
 	}
 
 	def self.get(url)
@@ -45,22 +50,22 @@ class Jira
 
 	end
 
+	def self.get_valid_transition_code(ticket, transition)
+		valid_transitions = get_valid_transitions(ticket)
+		valid_transitions.keys.each do |key|
+			return key if valid_transitions[key]["name"] == transition
+		end
+		return nil
+	end
+
 	def self.get_valid_transitions(ticket)
 		return get("issue/#{ticket}/transitions")
 	end
 
-	def self.transition_supported(ticket, transition)
-		code = "#{@states[transition]}"
-		valid_transitions = get_valid_transitions(ticket)
-		return valid_transitions.has_key?(code)
-	end
-
 	def self.move_to_in_code_review(ticket)
-		move_to_state(ticket, "back_to_in_dev") if transition_supported(ticket, "back_to_in_dev")
-		move_to_state(ticket, "in_dev") if transition_supported(ticket, "in_dev")
-		move_to_state(ticket, "story_code_review") if transition_supported(ticket, "story_code_review")
-		move_to_state(ticket, "defect_code_review") if transition_supported(ticket, "defect_code_review")
-		#puts "Unable to move" unless transition_supported(ticket, "ready_for_build")
+		move_to_state(ticket, "Back to Development")
+		move_to_state(ticket, "Begin Development")
+		move_to_state(ticket, "Ready for Code Review")
 	end
 
 	def self.move_all_to_in_code_review(tickets)
@@ -72,12 +77,11 @@ class Jira
 		end
 	end
 
-	def self.move_to_ready_for_build(ticket)
-		move_to_state(ticket, "ready_for_build")
-	end
-
 	def self.move_to_state(ticket, state)
-		post("issue/#{ticket}/transitions", { transition: @states[state] }.to_json)
+		code = get_valid_transition_code(ticket, state)
+		return if code.nil?
+
+		post("issue/#{ticket}/transitions", { transition: code }.to_json)
 	end
 
 end
@@ -87,3 +91,5 @@ end
 #puts Jira.move_to_in_code_review("CCO-1478")
 #puts Jira.move_to_ready_for_build("CCO-1473")
 #puts Jira.transition_supported("CCO-1478", "ready_for_build")
+
+puts Jira.move_to_in_code_review("CCO-1473")
