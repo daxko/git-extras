@@ -91,5 +91,4 @@ end
 #puts Jira.move_to_in_code_review("CCO-1478")
 #puts Jira.move_to_ready_for_build("CCO-1473")
 #puts Jira.transition_supported("CCO-1478", "ready_for_build")
-
-puts Jira.move_to_in_code_review("CCO-1473")
+#puts Jira.move_to_in_code_review("CCO-1473")
