@@ -1,61 +1,59 @@
-#!/usr/bin/env bash
+#!/usr/bin/env ruby
 
-#
-# Echo <msg> and exit
-#
+require 'highline/import'
+require_relative 'github.rb'
+require_relative 'git.rb'
 
-base=$1
+base = ARGV[0] || "beta"
+user= `git config --global user.email`.chomp
+branch = `git symbolic-ref HEAD | sed 's/refs\\/heads\\///'`.chomp
+messages = `git log remotes/origin/#{base}.. --pretty=format:%s`.chomp
+project = `git config remote.origin.url | sed 's/^.*://' | sed 's/\.git$//'`.chomp
 
-#use beta for default git branch unless arg is specified in command-line
-if [ -z "$1" ] 
-	then
-		base="beta"
-fi
+puts "# Pushing to origin/#{branch}..."
+puts `git push -u origin #{branch}`
 
-abort() {
-  echo $@
-  exit 1
-}
+password = ask("\nGithub password?: ") { |q| q.echo = false }
 
-#
-# Produce json with <title>, <body>, and <head>
-#
+print "# Creating pull request to #{base}... "
+begin
+	response = GithubHelper.create_pull_request(user, password, branch, messages, branch, base)
+rescue => e
+	print "\n# ERROR, unable to create pull request:\n"
+	abort(e.response)
+end
 
-json() {
-  cat <<EOF
-{
-  "title": "$1",
-  "body": "$2",
-  "head": "$3",
-  "base": "$4"
-}  
-EOF
-}
+number = response['number']
+if (!number.nil?)
+	print "pull request ##{number} created"
+end
+print "\n"
 
-# user
+tries = 0
+max_tries = 3
+mergeable_state = "unknown"
+while tries < max_tries && mergeable_state == 'unknown' do
+	print "# Seeing if the pull request can merge cleanly... "
+	sleep 2 + (tries * 3)
+	pull_request = GithubHelper.get_pull_request(number)
+	mergeable_state = pull_request['mergeable_state']
+	print "mergeable state: #{mergeable_state}\n"
+	tries += 1
+end
 
-user=$(git config --global user.email)
-test -z "$user" && abort "git config user.email required"
-
-# branch
-
-branch=$(git symbolic-ref HEAD | sed 's/refs\/heads\///')
-messages=$(git log remotes/origin/$base.. --pretty=format:%s | tr '\n' ' ')
-
-# make sure it's pushed
-
-git push origin $branch || abort "failed to push $branch"
-
-# lame hack to get project
-
-project=$(git config remote.origin.url | sed 's/^.*://' | sed 's/\.git$//')
-
-# create pull request
-
-body=$(json "$branch" "$messages" $branch $base)
-
-#echo $body
-
-curl -u "$user" "https://api.github.com/repos/$project/pulls" -d "$body"
-
-daxko-ready-for-review $base
+if (mergeable_state != 'clean')
+	puts "\nWARNING: This pull request cannot be merged cleanly to #{base}.  Please run git sync and try again."
+	close = ask("\nShould I close this pull request since it can't be merged?\n[y/n]?: ")
+	if (close.downcase == "y")
+		begin
+			pull_request_response = GithubHelper.close_pull_request(number, "Closed because cannot be merged cleanly", user, password)
+			puts "# Closed pull request #{number}"
+		rescue => e
+			puts "ERROR closing pull request: "
+			abort(e.response)
+		end
+	end
+else
+	puts "# It will merge cleanly to #{base}!"
+	Git.ready_for_review(base)
+end

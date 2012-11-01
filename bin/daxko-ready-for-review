@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require_relative 'jira.rb'
 require_relative 'git.rb'
 
 source_branch = ARGV[0]
@@ -8,13 +7,4 @@ if source_branch.nil?
 	abort("You must supply the source branch")
 end
 
-tickets = Git.get_tickets_from_current_branch(source_branch)
-
-puts "\nShould I move these jira ticket(s) to ready for code review? #{tickets.join(', ')}\n\n"
-print "[y/n]?: "
-$stdout.flush
-
-input = $stdin.gets.chomp
-if input.downcase == "y"
-	Jira.move_all_to_in_code_review(tickets)
-end
+Git.ready_for_review(source_branch)
