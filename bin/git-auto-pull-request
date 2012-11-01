@@ -47,7 +47,7 @@ if (mergeable_state != 'clean')
 	if (close.downcase == "y")
 		begin
 			pull_request_response = GithubHelper.close_pull_request(number, "Closed because cannot be merged cleanly", user, password)
-			puts "# Closed pull request #{number}"
+			abort("# Closed pull request #{number}")
 		rescue => e
 			puts "ERROR closing pull request: "
 			abort(e.response)
@@ -55,5 +55,6 @@ if (mergeable_state != 'clean')
 	end
 else
 	puts "# It will merge cleanly to #{base}!"
-	Git.ready_for_review(base)
 end
+
+Git.ready_for_review(base)
