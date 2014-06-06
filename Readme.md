@@ -49,6 +49,7 @@ $ bundle install
  - `git bug`
  - `git promote`
  - `git local-commits`
+ - `git jira start <ticket>`
 
 ## extras
 
@@ -107,6 +108,14 @@ Create a pull request for all commits in your current branch to pull into &lt;ta
 
 ```bash
 $ git auto-pull-request beta
+```
+
+## git-jira <command> <ticket>
+
+Move a jira ticket to "In Development"
+
+```bash
+$ git jira start OPS-1234
 ```
 
 ## git-contrib &lt;author&gt;

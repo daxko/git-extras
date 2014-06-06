@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require_relative 'jira.rb'
+
+error_text = "Error! Example: git jira start OPS-1234"
+
+command = ARGV[0]
+if command.nil? || command != "start"
+	abort(error_text)
+end
+
+ticket = ARGV[1]
+if ticket.nil?
+	abort(error_text)
+end
+
+Jira.move_to_in_development(ticket)
+
+print "\n"

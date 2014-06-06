@@ -62,6 +62,13 @@ class Jira
 		return get("issue/#{ticket}/transitions")
 	end
 
+	def self.move_to_in_development(ticket)
+		print "Moving #{ticket} to in development... "
+		move_to_state(ticket, "Back to Development")
+		move_to_state(ticket, "Begin Development")
+		print "Status: #{Jira.get_ticket_status(ticket)}"
+	end
+
 	def self.move_to_in_code_review(ticket)
 		move_to_state(ticket, "Back to Development")
 		move_to_state(ticket, "Begin Development")
