@@ -11,7 +11,7 @@ class Jira
 
 	@username = 'devapi'
 	@password = 'feHt6azU'
-	@baseurl = 'http://jira:8090/rest/api/latest/'
+	@baseurl = 'https://jira.daxko.com/rest/api/latest/'
 
 	@states = 
 	{
@@ -40,7 +40,7 @@ class Jira
 	end
 
 	def self.get_ticket_status(ticket)
-		return get_ticket(ticket)["fields"]["status"]["value"]["name"]
+		return get_ticket(ticket)["fields"]["status"]["name"]
 	end
 
 	def self.get_tickets_needing_code_review
@@ -51,9 +51,9 @@ class Jira
 	end
 
 	def self.get_valid_transition_code(ticket, transition)
-		valid_transitions = get_valid_transitions(ticket)
-		valid_transitions.keys.each do |key|
-			return key if valid_transitions[key]["name"] == transition
+		valid_transitions = get_valid_transitions(ticket)["transitions"]
+		valid_transitions.each do |item|
+			return item["id"] if item["name"] == transition
 		end
 		return nil
 	end
@@ -88,7 +88,7 @@ class Jira
 		code = get_valid_transition_code(ticket, state)
 		return if code.nil?
 
-		post("issue/#{ticket}/transitions", { transition: code }.to_json)
+		post("issue/#{ticket}/transitions", { transition: { id: code } }.to_json)
 	end
 
 end
@@ -97,5 +97,6 @@ end
 #puts Jira.get_valid_transitions("CCO-1478")
 #puts Jira.move_to_in_code_review("CCO-1478")
 #puts Jira.move_to_ready_for_build("CCO-1473")
-#puts Jira.transition_supported("CCO-1478", "ready_for_build")
-#puts Jira.move_to_in_code_review("CCO-1473")
+#puts Jira.get_valid_transition_code("CCO-2146", "Begin Development")
+#puts Jira.move_to_in_code_review("CCO-2146")
+puts Jira.move_to_in_development("CCO-2146")
