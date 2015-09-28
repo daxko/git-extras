@@ -15,5 +15,6 @@ if ticket.nil?
 end
 
 Jira.move_to_in_development(ticket)
+#Jira.move_all_to_in_code_review([ticket])
 
 print "\n"

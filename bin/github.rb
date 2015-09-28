@@ -23,7 +23,7 @@ class GithubHelper
 	end
 
 	def self.patch(url, body, username, password)
-		response = RestClient::Request.new(:method => :patch, :url => @baseurl + url, :user => @username, :password => @password, :payload => body, :headers => { :accept => :json, :content_type => :json }).execute
+		response = RestClient::Request.new(:method => :patch, :url => @baseurl + url, :user => username, :password => password, :payload => body, :headers => { :accept => :json, :content_type => :json }).execute
   	return JSON.parse(response.to_str)
 	end
 
@@ -57,6 +57,12 @@ class GithubHelper
 		
 		github = Github.new login:username, password:password
 		github.pull_requests.update @org, @repo, number, { state: "closed" }
+	end
+
+	def self.assign_pull_request(number, assignee, username, password)
+
+		self.patch("issues/#{number}", { assignee: assignee }.to_json, username, password)
+
 	end
 
 end
