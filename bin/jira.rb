@@ -97,7 +97,10 @@ class Jira
 		data = { transition: { id: code } }
 		data[:fields] = fields if !fields.nil?
 
-		post("issue/#{ticket}/transitions", data.to_json)
+		begin
+			post("issue/#{ticket}/transitions", data.to_json)
+		rescue Exception => e
+		end
 	end
 
 end
